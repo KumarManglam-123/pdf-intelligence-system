@@ -2,6 +2,10 @@
 
 A full-stack, production-grade Next.js 14+ web application for uploading PDF documents, generating grounded AI summaries via Groq LLM, chatting with long documents using Vector RAG (Retrieval-Augmented Generation), and collaborating in real-time with invited guests via secure shareable links.
 
+- **Live Deployed Application**: `https://happy-hats-love.loca.lt` (or your Vercel deployment URL)
+- **Demo Owner Account**: `demo@example.com` / `Password123!`
+
+
 ---
 
 ## Features
