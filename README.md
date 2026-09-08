@@ -57,7 +57,7 @@ At query time, when a user asks a question in the AI Chat panel:
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/your-repo/pdf-intelligence-system.git
+git clone https://github.com/KumarManglam-123/pdf-intelligence-system.git
 cd pdf-intelligence-system
 npm install
 ```
