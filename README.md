@@ -113,6 +113,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Scope Trade-offs & Known Limitations
 
-- **Scanned / Image PDFs**: Text extraction relies on `pdf-parse`. Scanned image PDFs without an OCR layer will produce fallback text notifying the user that selectable text is absent.
-- **Large PDF Processing**: Chunks and embeddings are generated synchronously on upload. For documents over 100 pages, background job queueing (e.g. Ingest/Inngest) can be added for async processing.
-- **Embedding Model**: Local ONNX model loading via `@xenova/transformers` is fast and zero-cost, with a deterministic fallback vectorizer if ONNX runtime binaries are restricted in edge environments.
+- **Email-on-Share**: Email notifications when generating or sharing a link were scoped out due to time constraints in favor of instant copyable share links.
+- **File Upload Limits & Scanned PDFs**: Uploads are restricted to 15MB. Text extraction relies on `pdf-parse`; scanned image-only PDFs without text layers will prompt an explicit error asking for text-selectable PDFs.
+- **Synchronous RAG Ingestion**: Chunks and vector embeddings are generated synchronously on upload. For documents over 100 pages, background job queueing (e.g. Ingest/Inngest) can be added for async background processing.
+- **Embedding Model**: Local ONNX model loading via `@xenova/transformers` (`Xenova/all-MiniLM-L6-v2`) provides zero-cost embeddings with a deterministic character/ngram fallback vectorizer if native binaries are restricted.
+

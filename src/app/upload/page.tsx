@@ -11,6 +11,8 @@ export default function UploadPage() {
   const [error, setError] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
 
+  const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
     if (e.target.files && e.target.files[0]) {
@@ -20,9 +22,15 @@ export default function UploadPage() {
         setFile(null);
         return;
       }
+      if (selected.size > MAX_FILE_SIZE) {
+        setError('File size exceeds the 15MB limit. Please upload a smaller PDF document.');
+        setFile(null);
+        return;
+      }
       setFile(selected);
     }
   };
+
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +98,7 @@ export default function UploadPage() {
               <p className="text-slate-700 font-semibold text-base">
                 Click to browse or drag and drop your PDF here
               </p>
-              <p className="text-slate-500 text-xs mt-1">Supports PDF files up to 20MB</p>
+              <p className="text-slate-500 text-xs mt-1">Supports PDF files up to 15MB</p>
             </div>
           </div>
         </div>

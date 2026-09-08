@@ -27,6 +27,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: 'File size exceeds the 15MB limit. Please upload a smaller PDF document.' },
+        { status: 400 }
+      );
+    }
+
     // 1. Validate MIME type & file extension
     const filename = file.name || 'document.pdf';
     const isPdfMime = file.type === 'application/pdf';
@@ -42,22 +51,29 @@ export async function POST(req: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const fileBuffer = Buffer.from(arrayBuffer);
 
-    // 2. Store in Vercel Blob (or dev fallback)
-    const blobUrl = await uploadToBlob(filename, fileBuffer);
-
-    // 3. Extract text from PDF
+    // 2. Extract text from PDF first before uploading to Blob to fail fast on invalid PDFs
     let extractedText = '';
     try {
       const parsedData = await pdfParse(fileBuffer);
-      extractedText = parsedData.text || '';
+      extractedText = parsedData && parsedData.text ? parsedData.text.trim() : '';
     } catch (parseError: any) {
-      console.warn('PDF text extraction error:', parseError);
-      extractedText = `Could not extract text cleanly from ${filename}.`;
+      console.error('PDF text extraction error:', parseError);
+      return NextResponse.json(
+        { error: 'Failed to extract text from the PDF. The file may be corrupted, encrypted, or malformed.' },
+        { status: 400 }
+      );
     }
 
-    if (!extractedText.trim()) {
-      extractedText = 'PDF appears to be scanned or contains no selectable text.';
+    if (!extractedText || extractedText.length < 10) {
+      return NextResponse.json(
+        { error: 'The uploaded PDF contains no extractable text (it may be a scanned image-only PDF or empty). Please upload a document with selectable text.' },
+        { status: 400 }
+      );
     }
+
+    // 3. Store in Vercel Blob (or dev fallback)
+    const blobUrl = await uploadToBlob(filename, fileBuffer);
+
 
     // 4. Generate AI Summary synchronously before returning
     const summary = await generatePdfSummary(extractedText);

@@ -19,7 +19,19 @@ export function ChatPanel({ pdfId, shareToken }: ChatPanelProps) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
-  const [sessionId] = useState(() => Math.random().toString(36).substring(2, 10));
+  const [sessionId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const key = `pdf_session_${pdfId}`;
+      let saved = localStorage.getItem(key);
+      if (!saved) {
+        saved = 'session_' + Math.random().toString(36).substring(2, 12);
+        localStorage.setItem(key, saved);
+      }
+      return saved;
+    }
+    return 'session_' + Math.random().toString(36).substring(2, 12);
+  });
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const fetchHistory = async () => {
