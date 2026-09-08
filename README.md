@@ -13,7 +13,7 @@ A full-stack, production-grade Next.js 14+ web application for uploading PDF doc
 
 - **Authentication**: Email/Password signup and login powered by NextAuth Credentials Provider and `bcryptjs` password hashing.
 - **PDF Upload & Storage**: Upload PDF documents with MIME type and extension validation; stored securely using `@vercel/blob` (with offline dev fallback).
-- **Instant AI Summaries**: Synchronous summary generation using Groq API (`llama-3.3-70b-versatile`) producing 3–5 concise sentences grounded strictly in the document's extracted text.
+- **Instant AI Summaries**: Synchronous summary generation using Groq API (`openai/gpt-oss-120b`) producing 3–5 concise sentences grounded strictly in the document's extracted text.
 - **RAG AI Document Chat**: Ask questions about long documents. Context is dynamically retrieved via vector embeddings (`@xenova/transformers` with `Xenova/all-MiniLM-L6-v2`) and cosine similarity before calling Groq. Streaming responses provide a real-time typing effect.
 - **Secure File Sharing**: PDF owners can generate unique random share links. Anyone with the link can view the document and chat/comment without needing an account.
 - **Guest & Owner Commenting**: Threaded comment replies with guest display name support and a markdown-lite formatter (`**bold**`, `*italic*`, `` `code` ``, `- bullet lists`).
@@ -29,7 +29,7 @@ A full-stack, production-grade Next.js 14+ web application for uploading PDF doc
 - **Auth**: NextAuth.js (Auth.js v4) with Credentials provider
 - **File Storage**: Vercel Blob (`@vercel/blob`)
 - **PDF Extraction**: `pdf-parse`
-- **LLM Provider**: Groq API (`llama-3.3-70b-versatile`)
+- **LLM Provider**: Groq API (`openai/gpt-oss-120b`)
 - **Vector Embeddings**: `@xenova/transformers` (`Xenova/all-MiniLM-L6-v2`)
 - **Styling**: Tailwind CSS & Lucide Icons
 
@@ -43,7 +43,7 @@ At query time, when a user asks a question in the AI Chat panel:
 1. The user's query is converted into a vector embedding using the same model.
 2. Cosine similarity is computed between the query vector and all chunk embeddings for that PDF.
 3. The top-3 highest-scoring chunks are extracted and injected into the Groq system prompt as grounding context alongside the last 5 conversation history turns.
-4. Groq (`llama-3.3-70b-versatile`) is instructed to answer strictly using the provided context excerpts or reply *"I cannot find the answer to that in the provided document."* if the information is absent, eliminating hallucinations.
+4. Groq (`openai/gpt-oss-120b`) is instructed to answer strictly using the provided context excerpts or reply *"I cannot find the answer to that in the provided document."* if the information is absent, eliminating hallucinations.
 
 ---
 
@@ -80,7 +80,7 @@ NEXTAUTH_URL="http://localhost:3000"
 
 # Groq API Configuration
 GROQ_API_KEY="gsk_your_groq_api_key"
-GROQ_MODEL="llama-3.3-70b-versatile"
+GROQ_MODEL="openai/gpt-oss-120b"
 
 # Vercel Blob Storage token
 BLOB_READ_WRITE_TOKEN="vercel_blob_rw_token"
@@ -110,7 +110,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
    - `NEXTAUTH_SECRET`
    - `NEXTAUTH_URL` (Set to your production Vercel URL, e.g. `https://your-app.vercel.app`)
    - `GROQ_API_KEY`
-   - `GROQ_MODEL` (`llama-3.3-70b-versatile`)
+   - `GROQ_MODEL` (`openai/gpt-oss-120b`)
    - `BLOB_READ_WRITE_TOKEN` (Create Vercel Blob store in Vercel dashboard and connect it)
 4. Deploy! Next.js will automatically run `prisma generate` during `npm run build`.
 

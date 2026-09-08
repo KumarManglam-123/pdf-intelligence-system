@@ -8,7 +8,7 @@ export function getGroqClient() {
   return new Groq({ apiKey: apiKey || 'dummy-key-for-build' });
 }
 
-export const DEFAULT_GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+export const DEFAULT_GROQ_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
 /**
  * Generate a 3-5 sentence document summary grounded in extracted text.

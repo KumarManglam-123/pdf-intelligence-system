@@ -57,7 +57,7 @@ export default async function HomePage() {
             Grounded AI Summaries
           </h3>
           <p className="text-slate-600 text-xs leading-relaxed">
-            Groq Llama 3.3 model analyzes document text to extract 3–5 core grounded bullet points without generic boilerplate.
+            Groq LLM models analyze document text to extract 3–5 core grounded bullet points without generic boilerplate.
           </p>
         </div>
 

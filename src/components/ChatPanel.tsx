@@ -14,11 +14,23 @@ interface ChatPanelProps {
   shareToken?: string;
 }
 
+function formatModelBadge(rawModelName: string) {
+  if (!rawModelName) return 'Groq GPT-OSS 120B';
+  if (rawModelName.includes('gpt-oss-120b')) return 'Groq GPT-OSS 120B';
+  if (rawModelName.includes('llama-3.3')) return 'Groq Llama 3.3';
+  if (rawModelName.includes('llama-3.1')) return 'Groq Llama 3.1';
+  if (rawModelName.includes('mixtral')) return 'Groq Mixtral 8x7B';
+  
+  const clean = rawModelName.split('/').pop() || rawModelName;
+  return `Groq ${clean.toUpperCase()}`;
+}
+
 export function ChatPanel({ pdfId, shareToken }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
+  const [modelName, setModelName] = useState<string>('openai/gpt-oss-120b');
   const [sessionId] = useState(() => {
     if (typeof window !== 'undefined') {
       const key = `pdf_session_${pdfId}`;
@@ -41,6 +53,7 @@ export function ChatPanel({ pdfId, shareToken }: ChatPanelProps) {
       const data = await res.json();
       if (res.ok && data.messages) {
         setMessages(data.messages);
+        if (data.modelName) setModelName(data.modelName);
       }
     } catch (err) {
       console.error('Failed to fetch chat history:', err);
@@ -127,7 +140,7 @@ export function ChatPanel({ pdfId, shareToken }: ChatPanelProps) {
           </div>
         </div>
         <span className="text-[10px] bg-violet-500/20 text-violet-300 border border-violet-400/30 px-2 py-0.5 rounded-full font-semibold">
-          Groq Llama 3.3
+          {formatModelBadge(modelName)}
         </span>
       </div>
 

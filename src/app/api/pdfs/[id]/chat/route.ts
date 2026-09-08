@@ -36,7 +36,7 @@ export async function GET(
       take: 50,
     });
 
-    return NextResponse.json({ messages });
+    return NextResponse.json({ messages, modelName: DEFAULT_GROQ_MODEL });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Failed to fetch chat history' }, { status: 500 });
   }
