@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String    @unique
+  hashedPassword String
+  createdAt      DateTime  @default(now())
+
+  pdfs           Pdf[]
+}
+
+model Pdf {
+  id            String        @id @default(cuid())
+  ownerId       String
+  filename      String
+  blobUrl       String
+  extractedText String        @db.Text
+  summary       String        @db.Text
+  createdAt     DateTime      @default(now())
+
+  owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  shares        Share[]
+  comments      Comment[]
+  chatMessages  ChatMessage[]
+  chunks        PdfChunk[]
+
+  @@index([ownerId])
+}
+
+model PdfChunk {
+  id         String   @id @default(cuid())
+  pdfId      String
+  chunkIndex Int
+  text       String   @db.Text
+  embedding  String   @db.Text
+  createdAt  DateTime @default(now())
+
+  pdf        Pdf      @relation(fields: [pdfId], references: [id], onDelete: Cascade)
+
+  @@index([pdfId])
+}
+
+model Share {
+  id        String    @id @default(cuid())
+  pdfId     String
+  token     String    @unique
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+
+  pdf       Pdf       @relation(fields: [pdfId], references: [id], onDelete: Cascade)
+
+  @@index([pdfId])
+}
+
+model Comment {
+  id              String    @id @default(cuid())
+  pdfId           String
+  authorName      String
+  authorUserId    String?
+  body            String    @db.Text
+  createdAt       DateTime  @default(now())
+  parentCommentId String?
+
+  pdf             Pdf       @relation(fields: [pdfId], references: [id], onDelete: Cascade)
+  parent          Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies         Comment[] @relation("CommentReplies")
+
+  @@index([pdfId])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  pdfId     String
+  sessionId String?
+  userId    String?
+  role      String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  pdf       Pdf      @relation(fields: [pdfId], references: [id], onDelete: Cascade)
+
+  @@index([pdfId])
+  @@index([sessionId])
+}
